@@ -1,91 +1,86 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Data.SqlClient;
-using Newtonsoft.Json;
 
-namespace JournalProgram
+namespace DailyJournal
 {
     class Journal
     {
         private List<Entry> entries;
-        private List<string> prompts;
+        private readonly string[] prompts = {
+            "Who was the most interesting person I interacted with today?",
+            "What was the best part of my day?",
+            "What was the most hardest task you had to do today?",
+            "How did I see the hand of the Lord in my life today?",
+            "What was the strongest emotion I felt today?",
+            "If I had one thing I could do over today, what would it be?",
+            "What is your favorite character from the holy scriptures?"
+        };
 
         public Journal()
         {
             entries = new List<Entry>();
-            prompts = new List<string>();
-            prompts.Add("Who was the most interesting person I interacted with today?");
-            prompts.Add("What was the best part of my day?");
-            prompts.Add("How did I see the hand of the Lord in my life today?");
-            prompts.Add("What was the strongest emotion I felt today?");
-            prompts.Add("If I had one thing I could do over today, what would it be?");
         }
 
-        public void WriteEntry()
+        public void AddEntry()
         {
-            Random rnd = new Random();
-            int index = rnd.Next(prompts.Count);
-            string prompt = prompts[index];
+            Random rand = new Random();
+            string prompt = prompts[rand.Next(prompts.Length)];
+            Console.WriteLine(prompt);
 
-            Console.WriteLine($"\n{prompt}");
             string response = Console.ReadLine();
 
-            Console.WriteLine("\nEnter any other information you would like to save (optional):");
-            string otherInfo = Console.ReadLine();
-
-            Entry entry = new Entry(prompt, response, otherInfo);
+            Entry entry = new Entry(prompt, response, DateTime.Now.ToString());
             entries.Add(entry);
 
-            Console.WriteLine("\nEntry saved!");
+            Console.WriteLine("You have successfully added an entry.");
         }
 
         public void DisplayEntries()
         {
-            if (entries.Count == 0)
-            {
-                Console.WriteLine("\nThere are no entries to display!");
-                return;
-            }
-
-            Console.WriteLine("\nJournal Entries:");
             foreach (Entry entry in entries)
             {
-                Console.WriteLine($"Date: {entry.Date}");
-                Console.WriteLine($"Prompt: {entry.Prompt}");
-                Console.WriteLine($"Response: {entry.Response}");
-                if (!string.IsNullOrEmpty(entry.OtherInfo))
-                {
-                    Console.WriteLine($"Other Information: {entry.OtherInfo}");
-                }
-                Console.WriteLine();
+                Console.WriteLine(entry);
             }
+        }
+
+        public void SaveEntries()
+        {
+            Console.Write("What is the filename?: ");
+            string filename = Console.ReadLine();
+
+            using (StreamWriter writer = new StreamWriter(filename))
+            {
+                foreach (Entry entry in entries)
+                {
+                    writer.WriteLine(entry);
+                }
+            }
+
+            Console.WriteLine("Entries saved successfully.");
         }
 
         public void LoadEntries()
         {
-            Console.Write("\nEnter the filename to load from: ");
+            Console.Write("Please enter a filename to load from: ");
             string filename = Console.ReadLine();
 
-            if (!File.Exists(filename))
+            List<Entry> loadedEntries = new List<Entry>();
+
+            using (StreamReader reader = new StreamReader(filename))
             {
-                Console.WriteLine("\nFile does not exist!");
-                return;
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] parts = line.Split(',');
+                    Entry entry = new Entry(parts[0], parts[1], parts[2]);
+                    loadedEntries.Add(entry);
+                }
             }
 
-            string json = File.ReadAllText(filename);
-            entries = JsonConvert.DeserializeObject<List<Entry>>(json);
+            entries = loadedEntries;
 
-            Console.WriteLine("\nEntries loaded!");
+            Console.WriteLine("Entries loaded successfully.");
         }
-
-        public void SaveToCSV()
-        {
-            if (entries.Count == 0)
-            {
-                Console.WriteLine("\nThere are no entries to save!");
-                return;
-            }
-
-            Console.Write("\nEnter the filename to save to: ");
-            string filename = Console.ReadLine
+    }
+}

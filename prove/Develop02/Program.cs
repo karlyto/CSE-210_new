@@ -1,52 +1,50 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 
-namespace JournalProgram
+namespace DailyJournal
 {
     class Program
     {
         static void Main(string[] args)
         {
             Journal journal = new Journal();
+            bool quit = false;
 
-            while (true)
+            while (!quit)
             {
-                Console.WriteLine("\nMenu:");
+                Console.WriteLine(" Please select one of the following choices:");
                 Console.WriteLine("1- Write");
                 Console.WriteLine("2- Display");
                 Console.WriteLine("3- Load");
-                Console.WriteLine("4- Save as CSV");
-                Console.WriteLine("5- Save to database");
-                Console.WriteLine("6- Quit");
+                Console.WriteLine("4- Save");
+                Console.WriteLine("5- Quit");
+                Console.Write("What would you like to do?: ");
 
-                Console.Write("\nEnter choice: ");
-                int choice = Convert.ToInt32(Console.ReadLine());
+                string choice = Console.ReadLine();
+                Console.WriteLine();
 
                 switch (choice)
                 {
-                    case 1:
-                        journal.WriteEntry();
+                    case "1":
+                        journal.AddEntry();
                         break;
-                    case 2:
+                    case "2":
                         journal.DisplayEntries();
                         break;
-                    case 3:
+                    case "3":
                         journal.LoadEntries();
                         break;
-                    case 4:
-                        journal.SaveToCSV();
+                    case "4":
+                        journal.SaveEntries();
                         break;
-                    case 5:
-                        journal.SaveToDatabase();
+                    case "5":
+                        quit = true;
                         break;
-                    case 6:
-                        Console.WriteLine("\nGoodbye!");
-                        return;
                     default:
-                        Console.WriteLine("\nInvalid choice!");
+                        Console.WriteLine("Invalid option. Please try again.");
                         break;
                 }
+
+                Console.WriteLine();
             }
         }
     }
