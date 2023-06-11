@@ -10,7 +10,6 @@ public class MathAssignment : Assignment
         _textbookSection = textbookSection;
         _problems = problems;
     }
-
     public string GetHomeworkList()
     {
         return $"Section {_textbookSection} Problems {_problems}";
